@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moje ogłoszenia - Portal Ogłoszeniowy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">Portal Ogłoszeniowy</a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <h1>Moje ogłoszenia</h1>
+        <button class="btn btn-success mb-4" data-bs-toggle="modal" data-bs-target="#addAdModal">+ Dodaj ogłoszenie</button>
+        <div class="row" id="myAdsList">
+            <!-- User ads will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Add Ad Modal -->
+    <div class="modal fade" id="addAdModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Dodaj nowe ogłoszenie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addAdForm">
+                        <div class="mb-3">
+                            <label for="adTitle" class="form-label">Tytuł</label>
+                            <input type="text" class="form-control" id="adTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adCategory" class="form-label">Kategoria</label>
+                            <select class="form-select" id="adCategory" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adDescription" class="form-label">Opis</label>
+                            <textarea class="form-control" id="adDescription" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adPrice" class="form-label">Cena (opcjonalnie)</label>
+                            <input type="text" class="form-control" id="adPrice">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Dodaj ogłoszenie</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        async function loadMyAds() {
+            try {
+                const response = await fetch('/api/ads?limit=1000');
+                const data = await response.json();
+                if (data.success) {
+                    const userAds = data.ads.filter(ad => ad.authorId === localStorage.getItem('userId'));
+                    const container = document.getElementById('myAdsList');
+                    container.innerHTML = '';
+                    
+                    if (userAds.length === 0) {
+                        container.innerHTML = '<p class="col-12">Brak ogłoszeń. Dodaj swoje pierwsze ogłoszenie!</p>';
+                        return;
+                    }
+
+                    userAds.forEach(ad => {
+                        const card = document.createElement('div');
+                        card.className = 'col-md-4 mb-4';
+                        card.innerHTML = `
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">${ad.title}</h5>
+                                    <p class="card-text">${ad.description.substring(0, 100)}...</p>
+                                    <p class="card-text"><strong>Kategoria:</strong> ${ad.category}</p>
+                                    <p class="card-text"><strong>Cena:</strong> ${ad.price || 'Brak informacji'}</p>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteAd('${ad.id}')">Usuń</button>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                console.error('Błąd:', error);
+            }
+        }
+
+        async function deleteAd(adId) {
+            if (confirm('Czy na pewno chcesz usunąć to ogłoszenie?')) {
+                try {
+                    const response = await fetch(`/api/ads/${adId}`, { method: 'DELETE' });
+                    const data = await response.json();
+                    if (data.success) {
+                        alert(data.message);
+                        loadMyAds();
+                    }
+                } catch (error) {
+                    console.error('Błąd:', error);
+                }
+            }
+        }
+
+        document.getElementById('addAdForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('adTitle').value;
+            const category = document.getElementById('adCategory').value;
+            const description = document.getElementById('adDescription').value;
+            const price = document.getElementById('adPrice').value;
+
+            try {
+                const response = await fetch('/api/ads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, category, description, price })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById('addAdForm').reset();
+                    loadMyAds();
+                    bootstrap.Modal.getInstance(document.getElementById('addAdModal')).hide();
+                }
+            } catch (error) {
+                alert('Błąd przy dodawaniu ogłoszenia');
+            }
+        });
+
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                const data = await response.json();
+                if (data.success) {
+                    const select = document.getElementById('adCategory');
+                    data.categories.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat;
+                        option.textContent = cat;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Błąd:', error);
+            }
+        }
+
+        loadCategories();
+        loadMyAds();
+    </script>
+</body>
+</html>
