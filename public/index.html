@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Ogłoszeniowy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img id="logo" src="/uploads/logo/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+                <span id="siteTitle">Portal Ogłoszeniowy</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Strona główna</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/o-nas">O nas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/regulamin">Regulamin</a>
+                    </li>
+                    <li class="nav-item" id="navLogin">
+                        <a class="nav-link" href="/login">Logowanie</a>
+                    </li>
+                    <li class="nav-item" id="navRegister">
+                        <a class="nav-link" href="/register">Rejestracja</a>
+                    </li>
+                    <li class="nav-item" id="navMyAds" style="display:none;">
+                        <a class="nav-link" href="/my-ads">Moje ogłoszenia</a>
+                    </li>
+                    <li class="nav-item" id="navProfile" style="display:none;">
+                        <a class="nav-link" href="/profile">Profil</a>
+                    </li>
+                    <li class="nav-item" id="navAdmin" style="display:none;">
+                        <a class="nav-link" href="/admin/dashboard">Panel admina</a>
+                    </li>
+                    <li class="nav-item" id="navLogout" style="display:none;">
+                        <a class="nav-link" href="#" onclick="logout()">Wyloguj się</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section py-5 bg-light text-center">
+        <div class="container">
+            <h1 class="display-4 mb-3">Witaj na naszym portalu ogłoszeniowym</h1>
+            <p class="lead mb-4" id="bannerText">Znajdź lub dodaj ogłoszenie w kilka minut!</p>
+            <a href="#" class="btn btn-primary btn-lg" onclick="document.getElementById('searchBtn').click()">Przeglądaj ogłoszenia</a>
+            <a href="/login" class="btn btn-success btn-lg ms-2">Dodaj ogłoszenie</a>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="py-4 bg-white">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Szukaj ogłoszeń...">
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select" id="categoryFilter">
+                        <option value="">Wszystkie kategorie</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" id="searchBtn" onclick="searchAds()">Szukaj</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="row" id="adsList">
+            <!-- Ads will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" class="mb-5">
+        <ul class="pagination justify-content-center" id="pagination">
+            <!-- Pagination will be generated here -->
+        </ul>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 Portal Ogłoszeniowy. Wszystkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>
